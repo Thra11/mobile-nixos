@@ -4,7 +4,7 @@
 , buildUBoot
 , armTrustedFirmwareAllwinner
 , fetchpatch
-, fetchurl
+, fetchFromGitLab
 }:
 
 let
@@ -22,10 +22,6 @@ in
   extraPatches = [
     # https://patchwork.ozlabs.org/patch/1202024
     (pw "1202024" "0c196zk1s3pq3wdv909sxmjgqpll2hwb817bpbghkfkyyknl96vg")
-
-    # Adapted from: https://gitlab.com/pine64-org/u-boot/-/tree/crust
-    # This drops the commits irrelevant for the pinephone.
-    ./minimal-crust-support.patch
   ];
 
   filesToInstall = ["u-boot-sunxi-with-spl.bin" "u-boot.img" "u-boot.dtb"];
@@ -43,9 +39,12 @@ in
   '';
 }).overrideAttrs(old: rec {
   version = "2020.07";
-  src = fetchurl {
-    url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${version}.tar.bz2";
-    sha256 = "0sjzy262x93aaqd6z24ziaq19xjjjk5f577ivf768vmvwsgbzxf1";
+  src = fetchFromGitLab {
+    domain = "gitlab.com";
+    owner = "pine64-org";
+    repo = "u-boot";
+    rev = "495f85a398272e6d8ea8142790158afa1bb29c77";
+    sha256 = "1w8yr24naxcqkrrcgvcxm6sq6djggnkfwslnb1gdcn9slgiysvq6";
   };
   postInstall = ''
     cp .config $out/build.config
